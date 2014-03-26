@@ -1,0 +1,25 @@
+Lipwig SL
+=========
+
+Lipwig SL, short for Lipwig Stochastic Lotsizing, is an academic stochastic lot sizing solver. It is named after the fictitious problem solver Moist von Lipwig, who appeared in Terry Pratchett's Disc World novels.
+
+Dependencies
+============
+
+This project uses the following libraries:
+* Apache Commons Lang 3.3
+* Apache Commons Math 3.2
+
+The libraries can be aquired at https://commons.apache.org/ or in the jar files in this projects lib folder. Attribution notices for these libraries are found within the corresponding lib folders.
+
+Building with Eclipse
+=====================
+
+To build the project with eclipse use the following steps:
+
+1.) Clone to your harddrive using git with the command 'git clone https://github.com/AndiPopp/Lipwig_SL.git'
+
+2.) Use Eclipse to create a new Java project in the cloned folder. Eclipse will automatically import the cloned files into this project.
+
+3.) Add the library jars (the one without the ending für source or javadoc) in the lib folders to your classpath
+ 
