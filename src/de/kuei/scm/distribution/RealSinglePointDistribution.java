@@ -4,6 +4,7 @@
 package de.kuei.scm.distribution;
 
 import org.apache.commons.math3.distribution.AbstractRealDistribution;
+import org.apache.commons.math3.distribution.RealDistribution;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.random.Well19937c;
 
@@ -11,7 +12,8 @@ import org.apache.commons.math3.random.Well19937c;
  * @author Andi Popp
  *
  */
-public class RealSinglePointDistribution extends AbstractRealDistribution {
+public class RealSinglePointDistribution extends AbstractRealDistribution 
+	implements NegatableDistribution{
 
 	/**
 	 * 
@@ -119,5 +121,10 @@ public class RealSinglePointDistribution extends AbstractRealDistribution {
 	@Override
 	public double sample(){
 		return this.point;
+	}
+
+	@Override
+	public RealDistribution negate() {
+		return new RealSinglePointDistribution(-this.getNumericalMean());
 	}
 }

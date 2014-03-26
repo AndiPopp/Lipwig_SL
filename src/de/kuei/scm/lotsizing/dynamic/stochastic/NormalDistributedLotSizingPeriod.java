@@ -3,7 +3,7 @@
  */
 package de.kuei.scm.lotsizing.dynamic.stochastic;
 
-import org.apache.commons.math3.distribution.NormalDistribution;
+import de.kuei.scm.distribution.NormalDistribution;
 import org.apache.commons.math3.distribution.RealDistribution;
 
 import de.kuei.scm.distribution.Convoluter;
@@ -42,17 +42,10 @@ public class NormalDistributedLotSizingPeriod extends AbstractLotSizingPeriod {
 
 	@Override
 	public RealDistribution[] getOrderDistributions() {
-		return this.getOrderDistributions();
+		return this.orderDistributions;
 	}
 
-	/**
-	 * This method returns the maximal order leadtime (denoted by l in Popp [2014]) for
-	 * this period
-	 * @return the maximal order lead time for this period
-	 */
-	public int getMaxOrderLeadTime(){
-		return orderDistributions.length+1;
-	}
+	
 	
 	/**
 	 * This method turns the Period into a line which can be saved into a csv file. The

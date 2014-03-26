@@ -3,6 +3,8 @@
  */
 package de.kuei.scm.lotsizing.dynamic.stochastic;
 
+import java.util.Vector;
+
 /**
  * This class represents a single dynamic stochastic lot sizing problem with normal distributed
  * orders and therefore normal distributed aggregated demand.
@@ -22,5 +24,11 @@ public class NormalDistributedStochasticDynamicLotsizingProblem {
 	 * The target alpha service level for this problem
 	 */
 	float alpha;
+	
+	/**
+	 * The collection of all solution calculated for this problem
+	 * so far
+	 */
+	Vector<AbstractStochasticDynamicLotSizingSolution> solutions;
 	
 }
