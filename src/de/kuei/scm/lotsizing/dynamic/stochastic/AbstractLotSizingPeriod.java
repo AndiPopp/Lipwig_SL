@@ -15,7 +15,10 @@ import de.kuei.scm.distribution.RealSinglePointDistribution;
  */
 public abstract class AbstractLotSizingPeriod {
 	
-	
+	/**
+	 * Empty constructor
+	 */
+	public AbstractLotSizingPeriod(){}
 	
 	/**
 	 * @param setupCost The setup costs for this period
@@ -67,6 +70,14 @@ public abstract class AbstractLotSizingPeriod {
 	 */
 	public int getMaxOrderLeadTime(){
 		return getOrderDistributions().length-1;
+	}
+	
+	/**
+	 * This method returns the actual number of order periods, including the period itself
+	 * @return the actual number of order periods
+	 */
+	public int getNumberOfOrderPeriods(){
+		return getOrderDistributions().length;
 	}
 	
 	/**

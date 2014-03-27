@@ -3,7 +3,10 @@
  */
 package de.kuei.scm.lotsizing.dynamic.stochastic;
 
+import java.util.Vector;
+
 import de.kuei.scm.distribution.NormalDistribution;
+
 import org.apache.commons.math3.distribution.RealDistribution;
 
 import de.kuei.scm.distribution.Convoluter;
@@ -32,6 +35,37 @@ public class NormalDistributedLotSizingPeriod extends AbstractLotSizingPeriod {
 		this.orderDistributions = orderDistributions;
 	}
 
+	/**
+	 * Constructs a period object out of a single line in a csv file as created by
+	 * the methid {@link #toCSVString()}.
+	 * @param csvString
+	 */
+	public NormalDistributedLotSizingPeriod(String csvString){
+		String[] values = csvString.split(";");
+		this.setupCost = Double.parseDouble(values[0]);
+		this.inventoryHoldingCost = Double.parseDouble(values[1]);
+		Vector<NormalDistribution> orderDistributionVector = new Vector<NormalDistribution>();
+		for (int i = 2; true; i+=2){
+			double mean;
+			try {
+				if(values[i].equals("")) break;
+				mean = Double.parseDouble(values[i]);
+			} catch (ArrayIndexOutOfBoundsException e) {
+				break;
+			}
+			double sd;
+			try {
+				sd = Double.parseDouble(values[i+1]);
+			} catch (ArrayIndexOutOfBoundsException e) {
+				throw new IllegalArgumentException("There is a mean without standard deviation in the period String:  "+csvString);
+			}
+			
+			orderDistributionVector.add(new NormalDistribution(mean, sd));
+		}
+		orderDistributions = new NormalDistribution[0];
+		this.orderDistributions = orderDistributionVector.toArray(this.orderDistributions);
+	}
+	
 	/* (non-Javadoc)
 	 * @see de.kuei.scm.lotsizing.dynamic.stochastic.AbstractLotSizingPeriod#getAggregatedDemandDistribution()
 	 */
@@ -67,11 +101,10 @@ public class NormalDistributedLotSizingPeriod extends AbstractLotSizingPeriod {
 		
 		//The next cells are the order distributions
 		for (int i = 0; i < orderDistributions.length; i++){
-				csvString = csvString + orderDistributions[i].getNumericalMean()+";";
-				csvString = csvString + orderDistributions[i].getNumericalVariance();
+				csvString = csvString + orderDistributions[i].getMean()+";";
+				csvString = csvString + orderDistributions[i].getStandardDeviation();
 				if (i < orderDistributions.length-1) csvString = csvString+";";
 		}
-		
 		return csvString;
 	}
 	
