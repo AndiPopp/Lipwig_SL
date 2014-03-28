@@ -18,6 +18,11 @@ import de.kuei.scm.distribution.Convoluter;
 public class NormalDistributedLotSizingPeriod extends AbstractLotSizingPeriod {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -300853598902505871L;
+	
+	/**
 	 * The field to actually save the object returned by 
 	 * {@link AbstractLotSizingPeriod#getOrderDistributions()}
 	 */
@@ -74,12 +79,14 @@ public class NormalDistributedLotSizingPeriod extends AbstractLotSizingPeriod {
 		return (NormalDistribution) Convoluter.convolute(orderDistributions);
 	}
 
+	/**
+	 * Gets the array of order distribution in backwards chronological order, i.e. 
+	 * the index in the array represents the order lead time
+	 */
 	@Override
 	public RealDistribution[] getOrderDistributions() {
 		return this.orderDistributions;
 	}
-
-	
 	
 	/**
 	 * This method turns the Period into a line which can be saved into a csv file. The

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.kuei.scm.lotsizing.dynamic.stochastic;
+package de.kuei.scm.lotsizing.dynamic.stochastic.solver;
 
 /**
  * This is a container class, which saves a possible solution for
@@ -9,7 +9,7 @@ package de.kuei.scm.lotsizing.dynamic.stochastic;
  * @author Andi Popp
  *
  */
-public abstract class AbstractStochasticDynamicLotSizingSolution {
+public abstract class AbstractStochasticLotSizingSolution {
 
 	/**
 	 * Gets the value of the goal function as calculated by the solver for this solution

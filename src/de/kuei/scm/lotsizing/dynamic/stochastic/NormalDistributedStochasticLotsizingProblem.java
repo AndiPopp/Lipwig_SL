@@ -6,7 +6,6 @@ package de.kuei.scm.lotsizing.dynamic.stochastic;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,14 +15,21 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
+import de.kuei.scm.lotsizing.dynamic.stochastic.solver.AbstractStochasticLotSizingSolution;
+
 /**
  * This class represents a single dynamic stochastic lot sizing problem with normal distributed
  * orders and therefore normal distributed aggregated demand.
  * @author Andi Popp
  *
  */
-public class NormalDistributedStochasticDynamicLotsizingProblem implements Serializable{
+public class NormalDistributedStochasticLotsizingProblem extends AbstractStochasticLotSizingProblem implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2954031522055879385L;
+
 	/**
 	 * The name of the problem
 	 */
@@ -45,29 +51,29 @@ public class NormalDistributedStochasticDynamicLotsizingProblem implements Seria
 	 * The collection of all solution calculated for this problem
 	 * so far
 	 */
-	Vector<AbstractStochasticDynamicLotSizingSolution> solutions;
-	
-	
-	
+	Vector<AbstractStochasticLotSizingSolution> solutions;
+		
 	/**
 	 * Full parameter constructor
 	 * @param name
 	 * @param periods
 	 * @param alpha
 	 */
-	public NormalDistributedStochasticDynamicLotsizingProblem(String name,
+	public NormalDistributedStochasticLotsizingProblem(String name,
 			NormalDistributedLotSizingPeriod[] periods, float alpha) {
 		this.name = name;
 		this.periods = periods;
 		this.alpha = alpha;
-		solutions = new Vector<AbstractStochasticDynamicLotSizingSolution>();
+		solutions = new Vector<AbstractStochasticLotSizingSolution>();
 	}
 
 	/**
-	 * Constructs a problem from a csv file as created by {@link #toCSVFile(File)}
+	 * Constructs a problem from a csv file as created by {@link #toCSVFile(File)}. See the linked
+	 * wiki page for further details.
+	 * @see <a href="http://github.com/AndiPopp/Lipwig_SL/wiki/CSV-problem-file-format">CSV format wiki page</a>
 	 * @param csvFile
 	 */
-	public NormalDistributedStochasticDynamicLotsizingProblem(File csvFile){
+	public NormalDistributedStochasticLotsizingProblem(File csvFile){
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(csvFile)));
 			
@@ -99,12 +105,7 @@ public class NormalDistributedStochasticDynamicLotsizingProblem implements Seria
 		}
 	}
 
-
-	/**
-	 * 
-	 * @param csvFile
-	 * @return true if the problem was written to the file; false if an IOException occurs
-	 */
+	@Override
 	public boolean toCSVFile(File csvFile){
 		PrintStream out;
 		try {
@@ -112,7 +113,8 @@ public class NormalDistributedStochasticDynamicLotsizingProblem implements Seria
 			
 			//write the alpha service level
 			out.print("name:;"+this.name+";");
-			out.println("alpha:;"+this.alpha);
+			out.print("alpha:;"+this.alpha+";");
+			out.println("type:;NormalDistributed");
 			
 			//write an empty line to distinguish first line from period lines
 			out.println();
@@ -141,9 +143,14 @@ public class NormalDistributedStochasticDynamicLotsizingProblem implements Seria
 		}		
 		return true;
 	}
-	
+
 	@Override
-	public String toString(){
+	public String getName() {
 		return this.name;
+	}
+
+	@Override
+	public AbstractLotSizingPeriod[] getPeriods() {
+		return this.periods;
 	}
 }

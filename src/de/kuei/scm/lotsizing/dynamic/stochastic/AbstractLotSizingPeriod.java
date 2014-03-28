@@ -3,6 +3,8 @@
  */
 package de.kuei.scm.lotsizing.dynamic.stochastic;
 
+import java.io.Serializable;
+
 import org.apache.commons.math3.distribution.RealDistribution;
 
 import de.kuei.scm.distribution.Convoluter;
@@ -13,8 +15,13 @@ import de.kuei.scm.distribution.RealSinglePointDistribution;
  * documentation the time index of this period is denoted by t.
  * @author Andi Popp
  */
-public abstract class AbstractLotSizingPeriod {
+public abstract class AbstractLotSizingPeriod implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5423156534006656229L;
+
 	/**
 	 * Empty constructor
 	 */
