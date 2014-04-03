@@ -14,8 +14,7 @@ package de.kuei.scm.lotsizing.dynamic.stochastic.solver;
 public class DPLotSizingDecision {
 
 	/**
-	 * The next setup period with this decision. Null pointer implicates the end of 
-	 * the planing horizon
+	 * The next setup period with this decision. 
 	 */
 	protected DPBackwardRecursionPeriod nextSetupPeriod;
 	

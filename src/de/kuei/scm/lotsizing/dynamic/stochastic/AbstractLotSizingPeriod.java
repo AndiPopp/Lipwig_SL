@@ -8,6 +8,7 @@ import java.io.Serializable;
 import org.apache.commons.math3.distribution.RealDistribution;
 
 import de.kuei.scm.distribution.Convoluter;
+import de.kuei.scm.distribution.ConvolutionNotDefinedException;
 import de.kuei.scm.distribution.RealSinglePointDistribution;
 
 /**
@@ -50,7 +51,7 @@ public abstract class AbstractLotSizingPeriod implements Serializable{
 	}
 	
 	/**
-	 * The holding costs per ammount unit at the end of this period
+	 * The holding costs per amount unit at the end of this period
 	 */
 	protected double inventoryHoldingCost;
 	
@@ -100,8 +101,9 @@ public abstract class AbstractLotSizingPeriod implements Serializable{
 	 * period in an array in a lot sizing problem object
 	 * @param k the period in which 
 	 * @return the convoluted realised orders
+	 * @throws ConvolutionNotDefinedException 
 	 */
-	public RealDistribution realisedDemand(int t, int k){
+	public RealDistribution realisedDemand(int t, int k) throws ConvolutionNotDefinedException{
 		//check if k is lower or equal than t-l_max, then all orders will be open
 		if (k <= t-getMaxOrderLeadTime()) return new RealSinglePointDistribution(0.0);
 		
@@ -124,8 +126,9 @@ public abstract class AbstractLotSizingPeriod implements Serializable{
 	 * period in an array in a lot sizing problem object
 	 * @param k the period in which 
 	 * @return the convoluted open orders
+	 * @throws ConvolutionNotDefinedException 
 	 */
-	public RealDistribution openDemand(int t, int k){
+	public RealDistribution openDemand(int t, int k) throws ConvolutionNotDefinedException{
 		//check if k is lower or equal than t-l_max, then all orders will be open
 		if (k <= t-getMaxOrderLeadTime()) return getAggregatedDemandDistribution();
 		

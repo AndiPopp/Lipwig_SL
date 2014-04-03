@@ -13,9 +13,9 @@ public abstract class AbstractStochasticLotSizingSolution {
 
 	/**
 	 * Gets the value of the goal function as calculated by the solver for this solution
-	 * @return the value of the goal function as calculated by the solver for this solution
+	 * @return the value of the objective function as calculated by the solver for this solution
 	 */
-	public abstract double getGoalValue();
+	public abstract double getObjectiveValue();
 	
 	/**
 	 * Gets the value of the amount variables for each period.

@@ -6,7 +6,7 @@ package de.kuei.scm.distribution;
  * @author Andi Popp
  *
  */
-public class ConvolutionNotDefinedException extends RuntimeException {
+public class ConvolutionNotDefinedException extends Exception {
 
 	 /**
 	 * 

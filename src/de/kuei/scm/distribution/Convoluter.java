@@ -3,8 +3,11 @@
  */
 package de.kuei.scm.distribution;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.distribution.AbstractRealDistribution;
+
 import de.kuei.scm.distribution.NormalDistribution;
+
 import org.apache.commons.math3.distribution.RealDistribution;
 
 /**
@@ -19,7 +22,7 @@ public class Convoluter {
 	 * @param Distribution1 The first distribution to be convoluted
 	 * @param Distribution2 The second distribution to be convoluted
 	 * @return The convolution of both distribution as a new {@link AbstractRealDistribution}
-	 * @throws ConvolutionNotDefinedException If the convolution is not easily calculable
+	 * @throws ConvolutionNotDefinedException if the convolution is not easily calculable
 	 */
 	public static AbstractRealDistribution convolute(RealDistribution Distribution1, RealDistribution Distribution2) throws ConvolutionNotDefinedException{
 		//Folding two normal distributions or a normal distribution with a single point distribution
@@ -33,20 +36,26 @@ public class Convoluter {
 		throw new ConvolutionNotDefinedException("Convoluting of types "+Distribution1.getClass().getName()+" and "+Distribution2.getClass().getName()+" not implemented, properly not effiently calculable");
 	}
 	
-	public static AbstractRealDistribution convolute(RealDistribution[] Distributions) throws ConvolutionNotDefinedException{
+	/**
+	 * Convolutes a given array of distributions 
+	 * @param distributions the array of distributions
+	 * @return the convolution of the distribution
+	 * @throws ConvolutionNotDefinedException if the convolution is not easily calculable
+	 */
+	public static AbstractRealDistribution convolute(RealDistribution[] distributions) throws ConvolutionNotDefinedException{
 		//Check Distribution types
 		boolean allSinglePointDistributions = true;
 		boolean allNormalDistributions = true;
-		for (int i = 0; i < Distributions.length; i++){
-			if (!(Distributions[i] instanceof RealSinglePointDistribution)) allSinglePointDistributions = false;
-			if (!(Distributions[i] instanceof NormalDistribution || Distributions[i] instanceof RealSinglePointDistribution)) allNormalDistributions = false;
+		for (int i = 0; i < distributions.length; i++){
+			if (!(distributions[i] instanceof RealSinglePointDistribution)) allSinglePointDistributions = false;
+			if (!(distributions[i] instanceof NormalDistribution || distributions[i] instanceof RealSinglePointDistribution)) allNormalDistributions = false;
 		}
 		
 		//Folding single point distributions
 		if (allSinglePointDistributions){
 			double mean = 0;
-			for (int i = 0; i < Distributions.length; i++){
-				mean += Distributions[i].getNumericalMean();
+			for (int i = 0; i < distributions.length; i++){
+				mean += distributions[i].getNumericalMean();
 			}
 			return new RealSinglePointDistribution(mean);
 		}
@@ -54,14 +63,36 @@ public class Convoluter {
 		else if (allNormalDistributions){
 			double mean = 0;
 			double variance = 0;
-			for (int i = 0; i < Distributions.length; i++){
-				mean += Distributions[i].getNumericalMean();
-				variance += Distributions[i].getNumericalVariance();
+			for (int i = 0; i < distributions.length; i++){
+				mean += distributions[i].getNumericalMean();
+				variance += distributions[i].getNumericalVariance();
 			}
 			return new NormalDistribution(mean, Math.sqrt(variance));
 		}
 		//if nothing applies throw exception
-		throw new ConvolutionNotDefinedException("Convoluting of type "+Distributions.getClass().getName()+" not implemented, properly not effiently calculable");
+		throw new ConvolutionNotDefinedException("Convoluting of type "+distributions.getClass().getName()+" not implemented, properly not effiently calculable");
 	}
 	
+	/**
+	 * Convolutes a part of a given array of distributions
+	 * @param distributions the array of distributions
+	 * @param start the first index of the part to be convoluted (inclusive)
+	 * @param end the last index of the part to be convoluted (exclusive)
+	 * @return the convolution of the distribution
+	 * @throws ConvolutionNotDefinedException if the convolution is not easily calculable
+	 */
+	public static AbstractRealDistribution convolute(RealDistribution[] distributions, int start, int end) throws ConvolutionNotDefinedException{
+		return convolute(ArrayUtils.subarray(distributions, start, end));
+	}
+	
+	/**
+	 * Convolutes a part of a givven array of distributions starting at index 0 (the first index)
+	 * @param distributions the array of distributions
+	 * @param end the last index of the part to be convoluted (exclusive)
+	 * @return the convolution of the distribution
+	 * @throws ConvolutionNotDefinedException if the convolution is not easily calculable
+	 */
+	public static AbstractRealDistribution convolute(RealDistribution[] distributions, int end) throws ConvolutionNotDefinedException{
+		return convolute(distributions, 0, end);
+	}
 }

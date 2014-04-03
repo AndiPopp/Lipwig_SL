@@ -45,7 +45,7 @@ public class NormalDistributedStochasticLotsizingProblem extends AbstractStochas
 	/**
 	 * The target alpha service level for this problem
 	 */
-	float alpha;
+	double alpha;
 	
 	/**
 	 * The collection of all solution calculated for this problem
@@ -152,5 +152,10 @@ public class NormalDistributedStochasticLotsizingProblem extends AbstractStochas
 	@Override
 	public AbstractLotSizingPeriod[] getPeriods() {
 		return this.periods;
+	}
+
+	@Override
+	public double getServiceLevel() {
+		return this.alpha;
 	}
 }

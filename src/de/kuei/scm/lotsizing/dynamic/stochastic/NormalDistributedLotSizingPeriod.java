@@ -5,6 +5,7 @@ package de.kuei.scm.lotsizing.dynamic.stochastic;
 
 import java.util.Vector;
 
+import de.kuei.scm.distribution.ConvolutionNotDefinedException;
 import de.kuei.scm.distribution.NormalDistribution;
 
 import org.apache.commons.math3.distribution.RealDistribution;
@@ -76,7 +77,12 @@ public class NormalDistributedLotSizingPeriod extends AbstractLotSizingPeriod {
 	 */
 	@Override
 	public RealDistribution getAggregatedDemandDistribution() {
-		return (NormalDistribution) Convoluter.convolute(orderDistributions);
+		try {
+			return (NormalDistribution) Convoluter.convolute(orderDistributions);
+		} catch (ConvolutionNotDefinedException e) {
+			throw new RuntimeException("Could not convolute aggregated demand in NormalDistributedLotSizingPeriod becaus of"
+					+ "ConvolutionNotDefinedException. This should not happen. Please consider submitting a detailed bug report.");
+		}
 	}
 
 	/**
@@ -90,8 +96,8 @@ public class NormalDistributedLotSizingPeriod extends AbstractLotSizingPeriod {
 	
 	/**
 	 * This method turns the Period into a line which can be saved into a csv file. The
-	 * format is as follows: The cells are sperated by a ';'. The first cell denotes the 
-	 * setup cost parameter and the second one the inventory holdin cost parameter. The 
+	 * format is as follows: The cells are separated by a ';'. The first cell denotes the 
+	 * setup cost parameter and the second one the inventory holding cost parameter. The 
 	 * following cells denote the order distributions represented by two cells with the
 	 * mean and the standard deviation. The order cells are in the same sequence as in
 	 * {@link NormalDistributedLotSizingPeriod#getOrderDistributions()}.

@@ -37,6 +37,12 @@ public abstract class AbstractStochasticLotSizingProblem implements Serializable
 	 */
 	public abstract AbstractLotSizingPeriod[] getPeriods();
 	
+	/**
+	 * Gets the target alpha service level
+	 * @return the target alpha service level
+	 */
+	public abstract double getServiceLevel();
+	
 	@Override
 	public String toString(){
 		return this.getName();

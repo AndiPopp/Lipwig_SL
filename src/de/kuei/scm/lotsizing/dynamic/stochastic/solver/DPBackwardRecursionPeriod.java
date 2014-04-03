@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import de.kuei.scm.lotsizing.dynamic.stochastic.AbstractLotSizingPeriod;
+import de.kuei.scm.lotsizing.dynamic.stochastic.NormalDistributedLotSizingPeriod;
 
 /**
  * This is wrapper class for an {@link AbstractLotSizingPeriod} object, which
@@ -30,13 +31,13 @@ public class DPBackwardRecursionPeriod {
 	public DPLotSizingDecision optimalDecision;
 	
 	/**
-	 * The partial optimal value corresponding to {@link #optimalDecision}. Must also
+	 * The partial optimal value corresponding to {@link #optimalDecision}. To
 	 * be set by the {@link #solve()} function.
 	 */
 	public Double partialOptimalValue;
 		
 	/**
-	 * Constructs a wrapper around the {@link AbstractLotSizingPeriod} period and 
+	 * Constructs a wrapper around the {@link AbstractLotSizingPeriod} period  
 	 * with the given possible decisions
 	 * @param period period the {@link AbstractLotSizingPeriod} to be wrapped
 	 * @param laterPeriods
@@ -55,6 +56,18 @@ public class DPBackwardRecursionPeriod {
 	public DPBackwardRecursionPeriod(AbstractLotSizingPeriod period) {
 		this.period = period;
 		this.possibleDecisions = new Vector<DPLotSizingDecision>();
+	}
+	
+	/**
+	 * Constructs an already "optimized" dummy period to represent the end
+	 * of the planning horizon
+	 * @return an already "optimized" dummy period to represent the end
+	 * of the planning horizon
+	 */
+	public static DPBackwardRecursionPeriod getDummyPeriod(){
+		DPBackwardRecursionPeriod dummyPeriod = new DPBackwardRecursionPeriod(new NormalDistributedLotSizingPeriod(0, 0, null));
+		dummyPeriod.partialOptimalValue = new Double(0.0);
+		return dummyPeriod;
 	}
 	
 	/**
@@ -81,7 +94,10 @@ public class DPBackwardRecursionPeriod {
 				this.optimalDecision = decision;
 				this.partialOptimalValue = decision.cost + decision.nextSetupPeriod.partialOptimalValue;
 			};
+			
 		}
+		
+//		System.out.println("DEBUG: Solved "+this+". Next Setup Period is "+this.optimalDecision.nextSetupPeriod);
 	}
 	
 }
