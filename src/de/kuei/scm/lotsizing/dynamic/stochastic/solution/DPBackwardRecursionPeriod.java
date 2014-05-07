@@ -1,10 +1,12 @@
-package de.kuei.scm.lotsizing.dynamic.stochastic.solver;
+package de.kuei.scm.lotsizing.dynamic.stochastic.solution;
 
 import java.util.Iterator;
 import java.util.Vector;
 
 import de.kuei.scm.lotsizing.dynamic.stochastic.AbstractLotSizingPeriod;
 import de.kuei.scm.lotsizing.dynamic.stochastic.NormalDistributedLotSizingPeriod;
+import de.kuei.scm.lotsizing.dynamic.stochastic.solver.SolvingInitialisiationException;
+import de.kuei.scm.lotsizing.dynamic.stochastic.solver.WrongOptimisationOrderException;
 
 /**
  * This is wrapper class for an {@link AbstractLotSizingPeriod} object, which
@@ -12,12 +14,7 @@ import de.kuei.scm.lotsizing.dynamic.stochastic.NormalDistributedLotSizingPeriod
  * @author Andi Popp
  *
  */
-public class DPBackwardRecursionPeriod {
-
-	/**
-	 * The wrapped lot sizing period
-	 */
-	public final AbstractLotSizingPeriod period;
+public class DPBackwardRecursionPeriod extends AbstractPeriodWrapper{
 
 	/**
 	 * All the decision possibilities
@@ -44,7 +41,7 @@ public class DPBackwardRecursionPeriod {
 	 */
 	public DPBackwardRecursionPeriod(AbstractLotSizingPeriod period,
 			Vector<DPLotSizingDecision> laterPeriods) {
-		this.period = period;
+		super(period);
 		this.possibleDecisions = laterPeriods;
 	}
 
@@ -54,7 +51,7 @@ public class DPBackwardRecursionPeriod {
 	 * @param period the {@link AbstractLotSizingPeriod} to be wrapped
 	 */
 	public DPBackwardRecursionPeriod(AbstractLotSizingPeriod period) {
-		this.period = period;
+		super(period);
 		this.possibleDecisions = new Vector<DPLotSizingDecision>();
 	}
 	

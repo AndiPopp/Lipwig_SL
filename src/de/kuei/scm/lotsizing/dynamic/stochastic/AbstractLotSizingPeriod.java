@@ -14,6 +14,10 @@ import de.kuei.scm.distribution.RealSinglePointDistribution;
 /**
  * A class representing a single period in a stochastic lot sizing problem. In the following
  * documentation the time index of this period is denoted by t.
+ * 
+ * This class is used to store the parameters of the Period. To represent the solution it is
+ * to be put into a appropriate wrapper class as found in the package 
+ * de.kue.scm.lotsizing.dynamic.stochastic.solution
  * @author Andi Popp
  */
 public abstract class AbstractLotSizingPeriod implements Serializable{

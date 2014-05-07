@@ -6,7 +6,7 @@ package de.kuei.scm.lotsizing.dynamic.stochastic.examples;
 import java.io.File;
 
 import de.kuei.scm.lotsizing.dynamic.stochastic.NormalDistributedStochasticLotsizingProblem;
-import de.kuei.scm.lotsizing.dynamic.stochastic.solver.AbstractStochasticLotSizingSolution;
+import de.kuei.scm.lotsizing.dynamic.stochastic.solution.AbstractStochasticLotSizingSolution;
 import de.kuei.scm.lotsizing.dynamic.stochastic.solver.StaticUncertaintySolver;
 
 /**

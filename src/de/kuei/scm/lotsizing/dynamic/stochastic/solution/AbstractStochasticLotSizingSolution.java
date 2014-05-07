@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.kuei.scm.lotsizing.dynamic.stochastic.solver;
+package de.kuei.scm.lotsizing.dynamic.stochastic.solution;
 
 /**
  * This is a container class, which saves a possible solution for

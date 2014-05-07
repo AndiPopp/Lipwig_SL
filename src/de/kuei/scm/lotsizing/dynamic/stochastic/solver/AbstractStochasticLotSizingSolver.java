@@ -6,6 +6,7 @@ package de.kuei.scm.lotsizing.dynamic.stochastic.solver;
 import java.io.Serializable;
 
 import de.kuei.scm.lotsizing.dynamic.stochastic.AbstractStochasticLotSizingProblem;
+import de.kuei.scm.lotsizing.dynamic.stochastic.solution.AbstractStochasticLotSizingSolution;
 
 /**
  * An abstract class for lot sizing solvers. Each solver implements a different algorithm 

@@ -15,7 +15,7 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
-import de.kuei.scm.lotsizing.dynamic.stochastic.solver.AbstractStochasticLotSizingSolution;
+import de.kuei.scm.lotsizing.dynamic.stochastic.solution.AbstractStochasticLotSizingSolution;
 
 /**
  * This class represents a single dynamic stochastic lot sizing problem with normal distributed
