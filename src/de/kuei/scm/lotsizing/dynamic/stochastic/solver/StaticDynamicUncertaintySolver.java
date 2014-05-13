@@ -11,6 +11,7 @@ import de.kuei.scm.lotsizing.dynamic.stochastic.AbstractLotSizingPeriod;
 import de.kuei.scm.lotsizing.dynamic.stochastic.AbstractStochasticLotSizingProblem;
 import de.kuei.scm.lotsizing.dynamic.stochastic.solution.AbstractStochasticLotSizingSolution;
 import de.kuei.scm.lotsizing.dynamic.stochastic.solution.SimpleStochasticLotSizingSolution;
+import de.kuei.scm.lotsizing.dynamic.stochastic.util.SetupPattern;
 import de.kuei.scm.lotsizing.dynamic.stochastic.util.StockFunction;
 
 /**
@@ -35,15 +36,22 @@ public class StaticDynamicUncertaintySolver extends
 			AbstractStochasticLotSizingProblem problem) {
 		boolean[] pattern = new boolean[problem.getPeriods().length];
 		pattern[0] = true;
+		for (int i = 1; i < pattern.length; i++){
+			pattern[i] = false;
+		}
+		
 		SimpleStochasticLotSizingSolution bestSolution = null;
 		
 		while (true){
 			try {
 				SimpleStochasticLotSizingSolution solution = solve(problem, pattern);
-				System.out.println(solution.getObjectiveValue());
+				
+				SetupPattern.printPattern(pattern);
+				System.out.println(" -> " + solution.getObjectiveValue());
+		
 				if (bestSolution == null || solution.getObjectiveValue() < bestSolution.getObjectiveValue())
 					bestSolution = solution;
-				pattern = stepPattern(pattern);
+				pattern = SetupPattern.stepPattern(pattern);
 			} catch (SolvingInitialisiationException ex) {
 				//All patterns calculated
 				break;
@@ -53,25 +61,9 @@ public class StaticDynamicUncertaintySolver extends
 			}
 		}
 		
-		//TODO
 		return bestSolution;
 	}
 	
-	private boolean[] stepPattern(boolean[] pattern) throws SolvingInitialisiationException{
-		for (int i = 1; i < pattern.length; i++){
-			if (pattern[i] == false){
-				pattern[i] = true;
-				return pattern;
-			}
-			else{
-				pattern[i] = false;
-			}
-		}
-		
-		throw new SolvingInitialisiationException();
-		
-	}
-
 	/**
 	 * Solves the given problem under static-dynamic uncertainty strategy for the given setup Pattern
 	 * @param problem The problem to be solved with the given setup Pattern
@@ -108,10 +100,10 @@ public class StaticDynamicUncertaintySolver extends
 			}
 			else{
 				cycleDemand[pointer] = Convoluter.convolute(cycleDemand[pointer], periods[i].getAggregatedDemandDistribution());
+//				System.out.println()
 			}
 		}
-		
-		
+				
 		//calculate the order-up-to levels
 		double[] amountVariableValues = new double[setupPattern.length]; //solution values in period grid
 		double[] orderUpToLevel = new double[N]; //solution values in cycle grid
@@ -121,7 +113,11 @@ public class StaticDynamicUncertaintySolver extends
 		}
 		
 		//solve the problem via recursion
-		double objectiveValue = recursiveCostFunctionG(1, problem, cycleDemand, orderUpToLevel, setupPeriods);
+		double objectiveValue = recursiveCostFunctionG(0, problem, cycleDemand, orderUpToLevel, setupPeriods);
+		//add setup costs
+		for (int i = 0; i < setupPattern.length; i++){
+			if (setupPattern[i]) objectiveValue += periods[i].getSetupCost();
+		}
 		
 		return new SimpleStochasticLotSizingSolution(objectiveValue, "order-up-to-level", amountVariableValues, setupPattern);
 	}
@@ -163,8 +159,11 @@ public class StaticDynamicUncertaintySolver extends
 	private double recursiveCostFunctionG(int n, AbstractStochasticLotSizingProblem problem, RealDistribution[] cycleDemand, double[] orderUpToLevels, int[] setupPeriods) throws ConvolutionNotDefinedException{
 		double value = 0;
 		
-		for (int m = n; n < orderUpToLevels.length; n++){
+		for (int m = n; m < orderUpToLevels.length; m++){
+			//Calculate probability of effective cycle (n,m)
 			double p = prob(cycleDemand, orderUpToLevels, n, m);
+			
+			//Calculate value of function C(n,m)
 			double c;
 			if (m == orderUpToLevels.length-1){
 				c = inventoryCostFunctionC(problem, orderUpToLevels[n], setupPeriods[n], problem.getPeriods().length);
@@ -172,6 +171,8 @@ public class StaticDynamicUncertaintySolver extends
 			else{
 				c = inventoryCostFunctionC(problem, orderUpToLevels[n], setupPeriods[n], setupPeriods[m+1]);
 			}
+			
+			//Calculate value of function G(m+1)
 			double g;
 			if (m == orderUpToLevels.length-1){
 				g = 0;
@@ -179,7 +180,16 @@ public class StaticDynamicUncertaintySolver extends
 			else{
 				g = recursiveCostFunctionG(m+1, problem, cycleDemand, orderUpToLevels, setupPeriods);
 			}
+						
+			//Add everything up
 			value += p * (c+g);
+		
+//			System.out.println("DEBUG: Eff. Cycle ("+n+"/"+m+")");
+//			System.out.println("  p = "+p);
+//			System.out.println("  C = "+c);
+//			System.out.println("  G = "+g);
+//			System.out.println("  Sum = "+value);
+//			System.out.println();
 		}
 		
 		return value;

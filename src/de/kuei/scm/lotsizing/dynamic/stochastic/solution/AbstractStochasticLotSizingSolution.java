@@ -53,4 +53,13 @@ public abstract class AbstractStochasticLotSizingSolution {
 		return numericalSetupPattern;
 	}
 	
+	public void print(){
+		boolean[] setupPattern = getSetupPattern();
+		double[] amountVariableValues = getAmountVariableValues();
+		System.out.println("Period - "+getAmountVariableName());
+		System.out.println("---");
+		for (int i = 0; i < setupPattern.length; i++){
+			if (setupPattern[i]) System.out.println(i+" - "+amountVariableValues[i]);
+		}
+	}
 }
