@@ -9,7 +9,7 @@ import de.kuei.scm.lotsizing.dynamic.stochastic.AbstractStochasticLotSizingProbl
 import de.kuei.scm.lotsizing.dynamic.stochastic.solution.AbstractStochasticLotSizingSolution;
 import de.kuei.scm.lotsizing.dynamic.stochastic.solution.DPBackwardRecursionPeriod;
 import de.kuei.scm.lotsizing.dynamic.stochastic.solution.DPLotSizingDecision;
-import de.kuei.scm.lotsizing.dynamic.stochastic.solution.StaticUncertaintySolution;
+import de.kuei.scm.lotsizing.dynamic.stochastic.solution.LotsizingDPSolution;
 
 
 /**
@@ -64,7 +64,7 @@ public abstract class AbstractStochasticLotSizingDPSolver extends
 			}
 		}
 		
-		return new StaticUncertaintySolution(periods);
+		return new LotsizingDPSolution(periods, getAmoutVariableName());
 	}
 	
 	/**
@@ -79,4 +79,8 @@ public abstract class AbstractStochasticLotSizingDPSolver extends
 	 */
 	protected abstract DPLotSizingDecision getDecision(DPBackwardRecursionPeriod[] periods, int setupPeriod, int nextSetupPeriod, double alpha) throws ConvolutionNotDefinedException;
 
+	/**
+	 * Returns the amount variable name to put into the solution
+	 */
+	protected abstract String getAmoutVariableName();
 }

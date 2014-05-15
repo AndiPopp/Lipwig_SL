@@ -5,9 +5,6 @@ package de.kuei.scm.distribution;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.distribution.AbstractRealDistribution;
-
-import de.kuei.scm.distribution.NormalDistribution;
-
 import org.apache.commons.math3.distribution.RealDistribution;
 
 /**
@@ -26,14 +23,17 @@ public class Convoluter {
 	 */
 	public static AbstractRealDistribution convolute(RealDistribution Distribution1, RealDistribution Distribution2) throws ConvolutionNotDefinedException{
 		//Folding two normal distributions or a normal distribution with a single point distribution
-		if (Distribution1 instanceof NormalDistribution && Distribution2 instanceof NormalDistribution){
+		if ((Distribution1 instanceof NormalDistribution && Distribution2 instanceof NormalDistribution)
+				|| (Distribution1 instanceof RealSinglePointDistribution && Distribution2 instanceof NormalDistribution) 
+				|| (Distribution1 instanceof NormalDistribution && Distribution2 instanceof RealSinglePointDistribution) 
+			){
 			return new NormalDistribution(
 					Distribution1.getNumericalMean()+Distribution2.getNumericalMean(), 
 					Math.sqrt(Distribution1.getNumericalVariance()+Distribution2.getNumericalVariance())
 			);
 		}
 		//if nothing applies throw exception
-		throw new ConvolutionNotDefinedException("Convoluting of types "+Distribution1.getClass().getName()+" and "+Distribution2.getClass().getName()+" not implemented, properly not effiently calculable");
+		throw new ConvolutionNotDefinedException("Convoluting of types "+Distribution1.getClass().getName()+" and "+Distribution2.getClass().getName()+" not implemented, propably not effiently calculable");
 	}
 	
 	/**
@@ -86,7 +86,7 @@ public class Convoluter {
 	}
 	
 	/**
-	 * Convolutes a part of a givven array of distributions starting at index 0 (the first index)
+	 * Convolutes a part of a given array of distributions starting at index 0 (the first index)
 	 * @param distributions the array of distributions
 	 * @param end the last index of the part to be convoluted (exclusive)
 	 * @return the convolution of the distribution

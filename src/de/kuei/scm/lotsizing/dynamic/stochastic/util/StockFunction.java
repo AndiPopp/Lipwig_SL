@@ -67,7 +67,7 @@ public class StockFunction implements UnivariateFunction {
 		try{
 			double min = demand.inverseCumulativeProbability(accuracy);
 			double max = x;
-			double aux =  integrator.integrate(256, Integrand, min, max);
+			double aux =  integrator.integrate(1024, Integrand, min, max);
 			return aux;
 		}
 		catch(IllegalArgumentException ex){

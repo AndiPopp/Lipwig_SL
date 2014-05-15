@@ -63,4 +63,10 @@ public class StaticUncertaintySolver extends AbstractStochasticLotSizingDPSolver
 		return new DPLotSizingDecision(periods[nextSetupPeriod], decisionCost, totalProductionUpToNextSetupPeriod-totalProductionUpToSetupPeriod);
 	}
 
+
+	@Override
+	protected String getAmoutVariableName() {
+		return "Lot size";
+	}
+
 }

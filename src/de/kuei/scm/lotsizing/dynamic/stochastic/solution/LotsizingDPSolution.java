@@ -9,15 +9,19 @@ package de.kuei.scm.lotsizing.dynamic.stochastic.solution;
  * @author Andi Popp
  *
  */
-public class StaticUncertaintySolution extends
+public class LotsizingDPSolution extends
 		AbstractStochasticLotSizingDPSolution {
 
+	String amountVariableName;
+	
 	/**
 	 * Full parameter constructor
 	 * @param periods
+	 * @param amountVariableName
 	 */
-	public StaticUncertaintySolution(DPBackwardRecursionPeriod[] periods) {
+	public LotsizingDPSolution(DPBackwardRecursionPeriod[] periods, String amountVariableName) {
 		super(periods);
+		this.amountVariableName = amountVariableName;
 	}
 
 	/* (non-Javadoc)
@@ -25,7 +29,7 @@ public class StaticUncertaintySolution extends
 	 */
 	@Override
 	public String getAmountVariableName() {
-		return "lot size";
+		return this.amountVariableName;
 	}
 
 	

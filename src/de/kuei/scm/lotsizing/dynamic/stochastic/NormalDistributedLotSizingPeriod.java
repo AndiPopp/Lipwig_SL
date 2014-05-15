@@ -5,12 +5,12 @@ package de.kuei.scm.lotsizing.dynamic.stochastic;
 
 import java.util.Vector;
 
-import de.kuei.scm.distribution.ConvolutionNotDefinedException;
-import de.kuei.scm.distribution.NormalDistribution;
-
 import org.apache.commons.math3.distribution.RealDistribution;
 
 import de.kuei.scm.distribution.Convoluter;
+import de.kuei.scm.distribution.ConvolutionNotDefinedException;
+import de.kuei.scm.distribution.NormalDistribution;
+import de.kuei.scm.distribution.NormalLikeDistribution;
 
 /**
  * @author Andi Popp
@@ -27,7 +27,7 @@ public class NormalDistributedLotSizingPeriod extends AbstractLotSizingPeriod {
 	 * The field to actually save the object returned by 
 	 * {@link AbstractLotSizingPeriod#getOrderDistributions()}
 	 */
-	private NormalDistribution[] orderDistributions;
+	private NormalLikeDistribution[] orderDistributions;
 	
 	/**
 	 * The full parameter constructor of this object
@@ -36,7 +36,7 @@ public class NormalDistributedLotSizingPeriod extends AbstractLotSizingPeriod {
 	 * @param orderDistributions
 	 */
 	public NormalDistributedLotSizingPeriod(double setupCost,
-			double inventoryHoldingCost, NormalDistribution[] orderDistributions) {
+			double inventoryHoldingCost, NormalLikeDistribution[] orderDistributions) {
 		super(setupCost, inventoryHoldingCost);
 		this.orderDistributions = orderDistributions;
 	}

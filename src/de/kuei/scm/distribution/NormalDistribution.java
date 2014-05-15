@@ -10,7 +10,7 @@ import org.apache.commons.math3.distribution.RealDistribution;
  *
  */
 public class NormalDistribution extends org.apache.commons.math3.distribution.NormalDistribution
-	implements NegatableDistribution{
+	implements NegatableDistribution, NormalLikeDistribution{
 
 	/**
 	 * 

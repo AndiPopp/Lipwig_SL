@@ -5,6 +5,7 @@ package de.kuei.scm.distribution;
 
 import org.apache.commons.math3.distribution.AbstractRealDistribution;
 import org.apache.commons.math3.distribution.RealDistribution;
+import org.apache.commons.math3.exception.OutOfRangeException;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.random.Well19937c;
 
@@ -13,7 +14,7 @@ import org.apache.commons.math3.random.Well19937c;
  *
  */
 public class RealSinglePointDistribution extends AbstractRealDistribution 
-	implements NegatableDistribution{
+	implements NegatableDistribution, NormalLikeDistribution{
 
 	/**
 	 * 
@@ -127,4 +128,27 @@ public class RealSinglePointDistribution extends AbstractRealDistribution
 	public RealDistribution negate() {
 		return new RealSinglePointDistribution(-this.getNumericalMean());
 	}
+	
+	@Override 
+	public double inverseCumulativeProbability(final double p) throws OutOfRangeException {
+		if (p > 0) return this.point;
+		else throw new OutOfRangeException(p, 0, 1);
+	}
+	
+	@Override
+	public double probability(double x0, double x1) {
+		if (x0 < this.point && point <= x1) return 1;
+		else return 0;
+	}
+
+	@Override
+	public double getMean() {
+		return point;
+	}
+
+	@Override
+	public double getStandardDeviation() {
+		return 0;
+	}
+	
 }

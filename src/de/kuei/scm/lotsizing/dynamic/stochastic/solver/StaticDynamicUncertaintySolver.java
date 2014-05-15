@@ -46,8 +46,8 @@ public class StaticDynamicUncertaintySolver extends
 			try {
 				SimpleStochasticLotSizingSolution solution = solve(problem, pattern);
 				
-				SetupPattern.printPattern(pattern);
-				System.out.println(" -> " + solution.getObjectiveValue());
+//				SetupPattern.printPattern(pattern);
+//				System.out.println(" -> " + solution.getObjectiveValue());
 		
 				if (bestSolution == null || solution.getObjectiveValue() < bestSolution.getObjectiveValue())
 					bestSolution = solution;
