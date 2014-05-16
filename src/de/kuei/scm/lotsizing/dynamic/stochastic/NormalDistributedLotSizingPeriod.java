@@ -43,7 +43,7 @@ public class NormalDistributedLotSizingPeriod extends AbstractLotSizingPeriod {
 
 	/**
 	 * Constructs a period object out of a single line in a csv file as created by
-	 * the methid {@link #toCSVString()}.
+	 * the method {@link #toCSVString()}.
 	 * @param csvString
 	 */
 	public NormalDistributedLotSizingPeriod(String csvString){
