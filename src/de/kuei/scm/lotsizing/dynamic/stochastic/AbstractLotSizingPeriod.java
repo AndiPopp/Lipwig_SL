@@ -97,7 +97,7 @@ public abstract class AbstractLotSizingPeriod implements Serializable{
 	 * into a single aggregated distribution.
 	 * @return the distribution of the aggregated demand
 	 */
-	public abstract RealDistribution getAggregatedDemandDistribution();
+	public abstract RealDistribution totalDemand();
 	
 	/**
 	 * This method convolutes the all orders realised in period k for period t. 
@@ -112,7 +112,7 @@ public abstract class AbstractLotSizingPeriod implements Serializable{
 		if (k <= t-getMaxOrderLeadTime()) return new RealSinglePointDistribution(0.0);
 		
 		//check if k is bigger than t, then all orders will be realised
-		if (k > t) return getAggregatedDemandDistribution();
+		if (k > t) return totalDemand();
 		
 		//in all other cases, get the corresponding sub array and fold it
 		int numberOfRealizedOrders = k-t+getMaxOrderLeadTime(); 
@@ -128,13 +128,13 @@ public abstract class AbstractLotSizingPeriod implements Serializable{
 	 * 
 	 * @param t the period represented by this object, e.g. the position of the
 	 * period in an array in a lot sizing problem object
-	 * @param k the period in which 
+	 * @param k the period in which the demand is observed
 	 * @return the convoluted open orders
 	 * @throws ConvolutionNotDefinedException 
 	 */
 	public RealDistribution openDemand(int t, int k) throws ConvolutionNotDefinedException{
 		//check if k is lower or equal than t-l_max, then all orders will be open
-		if (k <= t-getMaxOrderLeadTime()) return getAggregatedDemandDistribution();
+		if (k <= t-getMaxOrderLeadTime()) return totalDemand();
 		
 		//check if k is bigger than t, then all orders will be realised
 		if (k > t) return new RealSinglePointDistribution(0.0);

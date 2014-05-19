@@ -1,8 +1,8 @@
-package de.kuei.scm.lotsizing.dynamic.stochastic.constructors;
+package de.kuei.scm.lotsizing.dynamic.stochastic.generators;
 
 import org.apache.commons.math3.distribution.RealDistribution;
 
-public abstract class AbstractDemandConstructor {
+public abstract class AbstractDemandGenerator {
 
 	/**
 	 * Takes the mean and sd of the aggregated distribution and returns order distributions

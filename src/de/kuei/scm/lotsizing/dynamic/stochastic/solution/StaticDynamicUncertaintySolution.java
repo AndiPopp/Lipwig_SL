@@ -74,11 +74,11 @@ public class StaticDynamicUncertaintySolution extends
 	 */
 	@Override
 	public boolean[] getSetupPattern() {
-		boolean[] setuPattern = new boolean[periods.length];
-		for (int i = 0; i < setuPattern.length; i++){
-			setuPattern[i] = periods[i].setup;
+		boolean[] setupPattern = new boolean[periods.length];
+		for (int i = 0; i < setupPattern.length; i++){
+			setupPattern[i] = periods[i].setup;
 		}
-		return setuPattern;
+		return setupPattern;
 	}
 
 }

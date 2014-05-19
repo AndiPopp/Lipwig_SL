@@ -19,12 +19,6 @@ import de.kuei.scm.lotsizing.dynamic.stochastic.solution.LotsizingDPSolution;
 public abstract class AbstractStochasticLotSizingDPSolver extends
 		AbstractStochasticLotSizingSolver {
 
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4386432024550471906L;
-
 	/*
 	 * (non-Javadoc)
 	 * @see de.kuei.scm.lotsizing.dynamic.stochastic.solver.AbstractStochasticLotSizingSolver#solve(de.kuei.scm.lotsizing.dynamic.stochastic.AbstractStochasticLotSizingProblem)

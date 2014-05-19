@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.kuei.scm.lotsizing.dynamic.stochastic.constructors;
+package de.kuei.scm.lotsizing.dynamic.stochastic.generators;
 
 import de.kuei.scm.distribution.NormalDistribution;
 import de.kuei.scm.distribution.NormalLikeDistribution;
@@ -13,7 +13,7 @@ import de.kuei.scm.distribution.RealSinglePointDistribution;
  * @author Andi Popp
  *
  */
-public class EqualDivisionNormalDistributedDemandConstructor extends AbstractDemandConstructor {
+public class EqualDivisionNormalDistributedDemandGenerator extends AbstractNormalLikeDemandGenerator {
 
 	/**
 	 * The forerun, 0 means there is no ADI
@@ -30,7 +30,7 @@ public class EqualDivisionNormalDistributedDemandConstructor extends AbstractDem
 	 * @param numberOfForerunPeriods
 	 * @param offSet
 	 */
-	public EqualDivisionNormalDistributedDemandConstructor(
+	public EqualDivisionNormalDistributedDemandGenerator(
 			int numberOfForerunPeriods, int offSet) {
 		if (numberOfForerunPeriods < 0 || offSet < 0) throw new IllegalArgumentException(); 
 		this.forerun = numberOfForerunPeriods;

@@ -17,11 +17,6 @@ import de.kuei.scm.lotsizing.dynamic.stochastic.util.StockFunction;
  */
 public class StaticDynamicUncertaintyNLHSolver extends AbstractStochasticLotSizingDPSolver{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	@Override
 	protected DPLotSizingDecision getDecision(
 			DPBackwardRecursionPeriod[] periods, int setupPeriod,
@@ -31,7 +26,7 @@ public class StaticDynamicUncertaintyNLHSolver extends AbstractStochasticLotSizi
 		//Get the vector of aggregated demand (there is no ADI in this approach)
 		RealDistribution[] demand = new RealDistribution[nextSetupPeriod-setupPeriod];
 		for (int i = 0; i < demand.length; i++){
-			demand[i] = periods[setupPeriod+i].period.getAggregatedDemandDistribution();
+			demand[i] = periods[setupPeriod+i].period.totalDemand();
 		}
 		
 		//Get the total production up to the beginning of the next setup period (i.e. exclusively!)

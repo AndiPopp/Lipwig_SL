@@ -10,11 +10,16 @@ package de.kuei.scm.lotsizing.dynamic.stochastic.solution;
  */
 public class SimpleStochasticLotSizingSolution extends
 		AbstractStochasticLotSizingSolution {
-
+	
 	/**
-	 * The objective value
+	 * The total setup costs
 	 */
-	private double objectiveValue;
+	private double totalSetupCosts;
+	
+	/**
+	 * The total inventory costs
+	 */
+	private double totalInventoryCosts;
 	
 	/**
 	 * The amount variable name
@@ -35,19 +40,21 @@ public class SimpleStochasticLotSizingSolution extends
 
 	/**
 	 * Full parameter constructor
-	 * @param objectiveValue
+	 * @param totalSetupCosts
+	 * @param totalInventoryCosts
 	 * @param amountVariableName
 	 * @param amountVariableValues
 	 * @param setupPattern
 	 * @throws IllegalArgumentException if the planning horizons of the amount variable values and the setup pattern do not match
 	 */
-	public SimpleStochasticLotSizingSolution(double objectiveValue,
+	public SimpleStochasticLotSizingSolution(double totalSetupCosts, double totalInventoryCosts,
 			String amountVariableName, double[] amountVariableValues,
 			boolean[] setupPattern) {
 		//Check inputs
 		if (amountVariableValues.length != setupPattern.length) throw new IllegalArgumentException("Planning horizons did not match while constructing a simple stochastic lot sizing Solution");
 		
-		this.objectiveValue = objectiveValue;
+		this.totalSetupCosts = totalSetupCosts;
+		this.totalInventoryCosts = totalInventoryCosts;
 		this.amountVariableName = amountVariableName;
 		this.amountVariableValues = amountVariableValues;
 		this.setupPattern = setupPattern;
@@ -58,7 +65,23 @@ public class SimpleStochasticLotSizingSolution extends
 	 */
 	@Override
 	public double getObjectiveValue() {
-		return this.objectiveValue;
+		return this.totalSetupCosts+this.totalInventoryCosts;
+	}
+	
+	/**
+	 * Gets the total setup costs
+	 * @return the total setup costs
+	 */
+	public double getTotalSetupCosts() {
+		return totalSetupCosts;
+	}
+
+	/**
+	 * Gets the total inventory costs
+	 * @return the total inventory costs
+	 */
+	public double getTotalInventoryCosts() {
+		return totalInventoryCosts;
 	}
 
 	/* (non-Javadoc)

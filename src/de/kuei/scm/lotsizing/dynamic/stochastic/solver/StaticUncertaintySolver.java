@@ -20,12 +20,6 @@ import de.kuei.scm.lotsizing.dynamic.stochastic.util.StockFunction;
  */
 public class StaticUncertaintySolver extends AbstractStochasticLotSizingDPSolver {
 
-	/**
-	 * The serial version UID
-	 */
-	private static final long serialVersionUID = -2262997917688083174L;
-
-	
 	/*
 	 * (non-Javadoc)
 	 * @see de.kuei.scm.lotsizing.dynamic.stochastic.solver.AbstractStochasticLotSizingDPSolver#getDecision(de.kuei.scm.lotsizing.dynamic.stochastic.solver.DPBackwardRecursionPeriod[], int, int, double)
@@ -35,7 +29,7 @@ public class StaticUncertaintySolver extends AbstractStochasticLotSizingDPSolver
 		//Get the vector of aggregated demand (there is no ADI in static uncertainty)
 		RealDistribution[] demand = new RealDistribution[nextSetupPeriod];
 		for (int i = 0; i < demand.length; i++){
-			demand[i] = periods[i].period.getAggregatedDemandDistribution();
+			demand[i] = periods[i].period.totalDemand();
 		}
 		
 		//Get the total production up to the beginning of the next setup period (i.e. exclusively!)

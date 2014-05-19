@@ -76,7 +76,7 @@ public class NormalDistributedLotSizingPeriod extends AbstractLotSizingPeriod {
 	 * @see de.kuei.scm.lotsizing.dynamic.stochastic.AbstractLotSizingPeriod#getAggregatedDemandDistribution()
 	 */
 	@Override
-	public RealDistribution getAggregatedDemandDistribution() {
+	public RealDistribution totalDemand() {
 		try {
 			return (NormalDistribution) Convoluter.convolute(orderDistributions);
 		} catch (ConvolutionNotDefinedException e) {

@@ -6,12 +6,16 @@ package de.kuei.scm.lotsizing.dynamic.stochastic.solution;
 
 
 /**
+ * A solution for a Lot sizing problem based on a DP solution
  * @author Andi Popp
  *
  */
 public class LotsizingDPSolution extends
 		AbstractStochasticLotSizingDPSolution {
 
+	/**
+	 * The amount variable name
+	 */
 	String amountVariableName;
 	
 	/**

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package de.kuei.scm.lotsizing.dynamic.stochastic.constructors;
+package de.kuei.scm.lotsizing.dynamic.stochastic.generators;
 
 import de.kuei.scm.distribution.NormalDistribution;
 import de.kuei.scm.distribution.NormalLikeDistribution;
@@ -13,7 +13,7 @@ import de.kuei.scm.distribution.RealSinglePointDistribution;
  * @author Andi Popp
  *
  */
-public class TriangleDivisionNormalDistributedDemandConstructor extends AbstractDemandConstructor {
+public class TriangleDivisionNormalDistributedDemandGenerator extends AbstractNormalLikeDemandGenerator {
 
 	/**
 	 * The number of order periods. 1 means there is no ADI
@@ -30,7 +30,7 @@ public class TriangleDivisionNormalDistributedDemandConstructor extends Abstract
 	 * @param numberOfForerunPeriods
 	 * @param offSet
 	 */
-	public TriangleDivisionNormalDistributedDemandConstructor(
+	public TriangleDivisionNormalDistributedDemandGenerator(
 			int numberOfForerunPeriods, int offSet) {
 		if (numberOfForerunPeriods < 1 || offSet < 0) throw new IllegalArgumentException(); 
 		this.numberOfOrderPeriods = numberOfForerunPeriods;

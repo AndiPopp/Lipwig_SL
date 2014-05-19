@@ -16,12 +16,9 @@ import de.kuei.scm.lotsizing.dynamic.stochastic.util.StockFunction;
  * @author Andi Popp
  *
  */
-public class StaticDynamicUncertaintyWithAOINLHSolver extends AbstractStochasticLotSizingDPSolver{
+public class StaticDynamicUncertaintyWithADINLHSolver extends AbstractStochasticLotSizingDPSolver{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
 
 	@Override
 	protected DPLotSizingDecision getDecision(

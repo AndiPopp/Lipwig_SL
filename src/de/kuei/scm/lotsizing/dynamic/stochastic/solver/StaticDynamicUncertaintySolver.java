@@ -21,11 +21,6 @@ import de.kuei.scm.lotsizing.dynamic.stochastic.util.StockFunction;
 public class StaticDynamicUncertaintySolver extends
 	AbstractStochasticLotSizingFullEnumerationSolver {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 487971241335590617L;
-
 	/*
 	 * (non-Javadoc)
 	 * @see de.kuei.scm.lotsizing.dynamic.stochastic.solver.AbstractStochasticLotSizingFullEnumerationSolver#solve(de.kuei.scm.lotsizing.dynamic.stochastic.AbstractStochasticLotSizingProblem, boolean[])
@@ -45,7 +40,7 @@ public class StaticDynamicUncertaintySolver extends
 		
 		///Period 0
 		int pointer = 0;
-		cycleDemand[pointer] = periods[0].getAggregatedDemandDistribution();
+		cycleDemand[pointer] = periods[0].totalDemand();
 		setupPeriods[pointer] = 0;
 		
 		///Other periods
@@ -53,28 +48,30 @@ public class StaticDynamicUncertaintySolver extends
 			if (setupPattern[i]){
 				pointer++;
 				setupPeriods[pointer] = i;
-				cycleDemand[pointer] = periods[i].getAggregatedDemandDistribution();
+				cycleDemand[pointer] = periods[i].totalDemand();
 			}
 			else{
-				cycleDemand[pointer] = Convoluter.convolute(cycleDemand[pointer], periods[i].getAggregatedDemandDistribution());
+				cycleDemand[pointer] = Convoluter.convolute(cycleDemand[pointer], periods[i].totalDemand());
 			}
 		}
 				
 		//calculate the order-up-to levels
 		double[] amountVariableValues = new double[setupPattern.length]; //solution values in period grid
-		double[] orderUpToLevel = getAmountVariableValues(problem, setupPattern); //solution values in cycle grid
+		double[] orderUpToLevel = new double[N]; //solution values in cycle grid
 		for (int n = 0; n < cycleDemand.length; n++){
+			orderUpToLevel[n] = cycleDemand[n].inverseCumulativeProbability(problem.getServiceLevel());
 			amountVariableValues[setupPeriods[n]] = orderUpToLevel[n];
 		}
 		
 		//solve the problem via recursion
-		double objectiveValue = recursiveCostFunctionG(0, problem, cycleDemand, orderUpToLevel, setupPeriods);
+		double totalInventoryCosts = recursiveCostFunctionG(0, problem, cycleDemand, orderUpToLevel, setupPeriods);
 		//add setup costs
+		double totalSetupCosts = 0.0;
 		for (int i = 0; i < setupPattern.length; i++){
-			if (setupPattern[i]) objectiveValue += periods[i].getSetupCost();
+			if (setupPattern[i]) totalSetupCosts += periods[i].getSetupCost();
 		}
 		
-		return new SimpleStochasticLotSizingSolution(objectiveValue, "order-up-to-level", amountVariableValues, setupPattern);
+		return new SimpleStochasticLotSizingSolution(totalSetupCosts, totalInventoryCosts, "order-up-to-level", amountVariableValues, setupPattern);
 	}
 	
 	/**
@@ -86,7 +83,7 @@ public class StaticDynamicUncertaintySolver extends
 	 * @return the inventory cost for the effective cycle
 	 * @throws ConvolutionNotDefinedException if the demand cannot be convoluted by {@link Convoluter}
 	 */
-	protected double prob(RealDistribution[] cycleDemand, double[] orderUpToLevels, int n, int m) throws ConvolutionNotDefinedException{
+	private double prob(RealDistribution[] cycleDemand, double[] orderUpToLevels, int n, int m) throws ConvolutionNotDefinedException{
 		double prob = 1;
 		RealDistribution demand = cycleDemand[n];
 		
@@ -110,16 +107,16 @@ public class StaticDynamicUncertaintySolver extends
 	 * @return the inventory cost for the effective cycle
 	 * @throws ConvolutionNotDefinedException if the demand cannot be convoluted by {@link Convoluter}
 	 */
-	protected double inventoryCostFunctionC(AbstractStochasticLotSizingProblem problem, double orderUpToLevel, int rN, int rMplus1) throws ConvolutionNotDefinedException{
+	private double inventoryCostFunctionC(AbstractStochasticLotSizingProblem problem, double orderUpToLevel, int rN, int rMplus1) throws ConvolutionNotDefinedException{
 		AbstractLotSizingPeriod[] periods = problem.getPeriods();
 		//initialize with first period
-		RealDistribution aggregatedDemand = periods[rN].getAggregatedDemandDistribution();
+		RealDistribution aggregatedDemand = periods[rN].totalDemand();
 		StockFunction stockFunction = new StockFunction(aggregatedDemand);
 		double costs = periods[rN].getInventoryHoldingCost()*stockFunction.value(orderUpToLevel);
 
 		//calculate other periods
 		for (int k = rN+1; k < rMplus1; k++){
-			aggregatedDemand = Convoluter.convolute(aggregatedDemand, periods[k].getAggregatedDemandDistribution());
+			aggregatedDemand = Convoluter.convolute(aggregatedDemand, periods[k].totalDemand());
 			stockFunction = new StockFunction(aggregatedDemand);
 			costs += periods[k].getInventoryHoldingCost()*stockFunction.value(orderUpToLevel);
 		}
@@ -127,48 +124,6 @@ public class StaticDynamicUncertaintySolver extends
 		return costs;
 	}
 
-	/**
-	 * Calculate the amount variable 
-	 * @param problem the problem
-	 * @param setupPattern the setup pattern
-	 * @return the array of amount variable values per cycle
-	 * @throws ConvolutionNotDefinedException if the demand cannot be convoluted by {@link Convoluter}
-	 */
-	protected double[] getAmountVariableValues(
-			AbstractStochasticLotSizingProblem problem, boolean[] setupPattern)
-			throws ConvolutionNotDefinedException {
-		
-		//Calculate the cycle demands and cycle indexes
-		int N = 1;
-		for (int i = 1; i < setupPattern.length;i++){
-			if (setupPattern[i]) N++;
-		}
-		AbstractLotSizingPeriod[] periods = problem.getPeriods();
-		RealDistribution[] cycleDemand = new RealDistribution[N];
-		
-		///Period 0
-		int pointer = 0;
-		cycleDemand[pointer] = periods[0].getAggregatedDemandDistribution();
-		
-		///Other periods
-		for (int i = 1; i < periods.length; i++){
-			if (setupPattern[i]){
-				pointer++;
-				cycleDemand[pointer] = periods[i].getAggregatedDemandDistribution();
-			}
-			else{
-				cycleDemand[pointer] = Convoluter.convolute(cycleDemand[pointer], periods[i].getAggregatedDemandDistribution());
-			}
-		}
-		
-		double[] orderUpToLevel = new double[N]; //solution values in cycle grid		
-		for (int n = 0; n < cycleDemand.length; n++){
-			orderUpToLevel[n] = cycleDemand[n].inverseCumulativeProbability(problem.getServiceLevel());
-		}
-		
-		return orderUpToLevel;
-	}
-	
 	/**
 	 * The recursive cost function G_n
 	 * @param n the cycle index n 
@@ -179,7 +134,7 @@ public class StaticDynamicUncertaintySolver extends
 	 * @return the value of the recursive cost function
 	 * @throws ConvolutionNotDefinedException if the demand cannot be convoluted by {@link Convoluter}
 	 */
-	protected double recursiveCostFunctionG(int n, AbstractStochasticLotSizingProblem problem, RealDistribution[] cycleDemand, double[] orderUpToLevels, int[] setupPeriods) throws ConvolutionNotDefinedException{
+	private double recursiveCostFunctionG(int n, AbstractStochasticLotSizingProblem problem, RealDistribution[] cycleDemand, double[] orderUpToLevels, int[] setupPeriods) throws ConvolutionNotDefinedException{
 		double value = 0;
 		
 		for (int m = n; m < orderUpToLevels.length; m++){
