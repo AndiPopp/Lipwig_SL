@@ -13,11 +13,11 @@ import de.kuei.scm.lotsizing.dynamic.stochastic.solution.SimpleStochasticLotSizi
 import de.kuei.scm.lotsizing.dynamic.stochastic.util.StockFunction;
 
 /**
- * This class implements an exact static uncertainty solver (without ADI) as described in
- * Özen et. al [2012], sec. 6
+ * This solver is wrong and only kept for historic purposes
  * @author Andi Popp
  *
  */
+@Deprecated //Wrong!
 public class StaticDynamicUncertaintySolver extends
 	AbstractStochasticLotSizingFullEnumerationSolver {
 

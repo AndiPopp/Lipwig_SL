@@ -41,7 +41,7 @@ public class StaticDynamicUncertaintyNLHSolver extends AbstractStochasticLotSizi
 			StockFunction stockFunction = new StockFunction(totalDemandDistribution);
 			decisionCost += periods[tau].period.getInventoryHoldingCost()*stockFunction.value(orderUpToLevel);
 		}
-		
+				
 		//return
 		return new DPLotSizingDecision(periods[nextSetupPeriod], decisionCost, orderUpToLevel);
 	}

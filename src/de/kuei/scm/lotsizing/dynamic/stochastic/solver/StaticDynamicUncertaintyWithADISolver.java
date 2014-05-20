@@ -7,14 +7,18 @@ import org.apache.commons.math3.distribution.RealDistribution;
 
 import de.kuei.scm.distribution.Convoluter;
 import de.kuei.scm.distribution.ConvolutionNotDefinedException;
+import de.kuei.scm.distribution.NegatableDistribution;
 import de.kuei.scm.lotsizing.dynamic.stochastic.AbstractLotSizingPeriod;
 import de.kuei.scm.lotsizing.dynamic.stochastic.AbstractStochasticLotSizingProblem;
 import de.kuei.scm.lotsizing.dynamic.stochastic.solution.SimpleStochasticLotSizingSolution;
+import de.kuei.scm.lotsizing.dynamic.stochastic.util.StockFunction;
 
 /**
+ * This solver is wrong and only kept for historic purposes
  * @author Andi Popp
  *
  */
+@Deprecated //Wrong!
 public class StaticDynamicUncertaintyWithADISolver extends
 		AbstractStochasticLotSizingFullEnumerationSolver {
 
@@ -71,9 +75,8 @@ public class StaticDynamicUncertaintyWithADISolver extends
 			amountVariableValues[setupPeriods[n]] = orderUpToLevelForOpenDemand[n];
 		}
 		
-		//TODO solve the problem via recursion
-//		double totalInventoryCosts = recursiveCostFunctionG(0, problem, cycleDemand, orderUpToLevel, setupPeriods);
-		double totalInventoryCosts = 0; //dummy
+		//solve the problem via recursion
+		double totalInventoryCosts = recursiveCostFunctionG(0, problem, totalCycleDemand, openCycleDemand, realisedCycleDemand, orderUpToLevelForOpenDemand, setupPeriods);
 		//add setup costs
 		double totalSetupCosts = 0.0;
 		for (int i = 0; i < setupPattern.length; i++){
@@ -93,7 +96,7 @@ public class StaticDynamicUncertaintyWithADISolver extends
 	 * @return the inventory cost for the effective cycle
 	 * @throws ConvolutionNotDefinedException if the demand cannot be convoluted by {@link Convoluter}
 	 */
-	public double prob(RealDistribution[] totalCycleDemand, RealDistribution[] openCycleDemand, RealDistribution[] realisedCycleDemand, double[] orderUpToLevelsForOpenDemand, int n, int m) throws ConvolutionNotDefinedException{
+	private double prob(RealDistribution[] totalCycleDemand, RealDistribution[] openCycleDemand, RealDistribution[] realisedCycleDemand, double[] orderUpToLevelsForOpenDemand, int n, int m) throws ConvolutionNotDefinedException{
 		double prob = 1;
 		if (n == totalCycleDemand.length-1) return prob; //Dummy period N+1 has prob=1
 		
@@ -109,6 +112,97 @@ public class StaticDynamicUncertaintyWithADISolver extends
 		//Period m+1 does not get absorbed
 		if (m == totalCycleDemand.length-1) return prob; //Dummy period N+1 has prob=1
 		else return prob*(1-demand.cumulativeProbability(orderUpToLevelsForOpenDemand[n]-orderUpToLevelsForOpenDemand[m+1]));
+	}
+	
+	/**
+	 * The recursive cost function G_n
+	 * @param n the cycle index n 
+	 * @param problem the original problem. Needed to calculate the exact inventory costs
+	 * @param totalCycleDemand the array of precalculated cycle demand
+	 * @param openCycleDemand the array of precalculated open cycle demand at the respective setup period
+	 * @param realisedCycleDemand the array of precalculated realised cylce demand ate the respective setup period
+	 * @param orderUpToLevelsForOpenDemand the precalculated order-up-to-levels
+	 * @param setupPeriods the setup periods; precalculated from the setup pattern
+	 * @return the value of the recursive cost function
+	 * @throws ConvolutionNotDefinedException if the demand cannot be convoluted by {@link Convoluter}
+	 */
+	private double recursiveCostFunctionG(int n, AbstractStochasticLotSizingProblem problem, RealDistribution[] totalCycleDemand, RealDistribution[] openCycleDemand, RealDistribution[] realisedCycleDemand, double[] orderUpToLevelsForOpenDemand, int[] setupPeriods) throws ConvolutionNotDefinedException{
+		double value = 0;
+		
+		for (int m = n; m < orderUpToLevelsForOpenDemand.length; m++){
+			
+			//Calculate probability of effective cycle (n,m)
+			double p = prob(totalCycleDemand, openCycleDemand, realisedCycleDemand, orderUpToLevelsForOpenDemand, n, m);
+//			System.out.println("DEBUG. p("+n+","+m+") = "+p);
+			
+			//Calculate value of function C(n,m)
+			double c;
+			if (n == orderUpToLevelsForOpenDemand.length-1){
+				c = inventoryCostFunctionC(problem, orderUpToLevelsForOpenDemand[n], setupPeriods[n], problem.getPeriods().length, problem.getPeriods().length);
+			}			
+			else if (m == orderUpToLevelsForOpenDemand.length-1){
+				c = inventoryCostFunctionC(problem, orderUpToLevelsForOpenDemand[n], setupPeriods[n], setupPeriods[n+1], problem.getPeriods().length);
+			}
+			else{
+				c = inventoryCostFunctionC(problem, orderUpToLevelsForOpenDemand[n], setupPeriods[n], setupPeriods[n+1], setupPeriods[m+1]);
+			}
+			
+			//Calculate value of function G(m+1)
+			double g;
+			if (m == orderUpToLevelsForOpenDemand.length-1){
+				g = 0;
+			}
+			else{
+				g = recursiveCostFunctionG(m+1, problem, totalCycleDemand, openCycleDemand, realisedCycleDemand, orderUpToLevelsForOpenDemand, setupPeriods);
+			}
+						
+			//Add everything up
+			value += p * (c+g);
+		
+//			System.out.println("DEBUG: Eff. Cycle ("+n+"/"+m+")");
+//			System.out.println("  p = "+p);
+//			System.out.println("  C = "+c);
+//			System.out.println("  G = "+g);
+//			System.out.println("  Sum = "+value);
+//			System.out.println();
+		}
+		
+		return value;
+	}
+	
+	
+	
+	/**
+	 * Calculates the inventory costs for the effective cycle (n,m)
+	 * @param problem the original lot sizing problem
+	 * @param orderUpToLevelForOpenDemand 
+	 * @param rN the n-th setupPeriod
+	 * @param rMplus1 the (m+1)-th setup period (the exclusive end of the effective cycle)
+	 * @return the inventory cost for the effective cycle
+	 * @throws ConvolutionNotDefinedException if the demand cannot be convoluted by {@link Convoluter}
+	 */
+	private double inventoryCostFunctionC(AbstractStochasticLotSizingProblem problem, double orderUpToLevelForOpenDemand, int rN, int rNplus1, int rMplus1) throws ConvolutionNotDefinedException{
+		
+		AbstractLotSizingPeriod[] periods = problem.getPeriods();
+		//initialize with first period
+		double costs = 0.0;
+		
+		for (int tau = rN; tau < rMplus1;tau++){
+			RealDistribution demand = periods[rN].openDemand(rN, rN);
+			for (int i = rN+1; i <= tau; i++){
+				demand = Convoluter.convolute(demand, periods[i].openDemand(i, rN));
+			}
+			for (int i = tau+1; i < rNplus1; i++){
+				demand = Convoluter.convolute(demand, ((NegatableDistribution)periods[i].realisedDemand(i, rN)).negate());
+			}
+			for (int i = rNplus1; rMplus1 < tau; i++){
+				demand = Convoluter.convolute(demand, periods[i].totalDemand());
+			}
+			StockFunction stockFunction = new StockFunction(demand);;
+			costs += periods[tau].getInventoryHoldingCost()*stockFunction.value(orderUpToLevelForOpenDemand);
+		}
+		
+		return costs;
 	}
 
 }

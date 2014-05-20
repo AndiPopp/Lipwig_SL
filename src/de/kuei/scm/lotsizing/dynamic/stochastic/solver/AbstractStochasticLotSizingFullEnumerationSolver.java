@@ -35,6 +35,7 @@ public abstract class AbstractStochasticLotSizingFullEnumerationSolver extends
 		
 		while (true){
 			try {
+//				SetupPattern.printlnPattern(pattern);//DEBUG
 				SimpleStochasticLotSizingSolution solution = solve(problem, pattern);
 				
 //				SetupPattern.printPattern(pattern);
