@@ -11,7 +11,7 @@ import de.kuei.scm.lotsizing.dynamic.stochastic.solution.AbstractStochasticLotSi
 import de.kuei.scm.lotsizing.dynamic.stochastic.solution.StaticDynamicUncertaintySimulator;
 import de.kuei.scm.lotsizing.dynamic.stochastic.solver.AbstractStochasticLotSizingSolver;
 import de.kuei.scm.lotsizing.dynamic.stochastic.solver.SolvingInitialisiationException;
-import de.kuei.scm.lotsizing.dynamic.stochastic.solver.StaticDynamicUncertaintyNLHSolver;
+import de.kuei.scm.lotsizing.dynamic.stochastic.solver.StaticDynamicUncertaintyULHSolver;
 
 /**
  * This example solves the problem described in Tempelmeier [2012] p. 319 with
@@ -29,7 +29,7 @@ public class ExampleTempelmeier2012p319StaticDynamic {
 		NormalDistributedStochasticLotsizingProblem problem = new NormalDistributedStochasticLotsizingProblem(new File("examples/example_problem_Tempelmeier2012_p319.csv"));
 		
 		//Create a static uncertainty solver
-		AbstractStochasticLotSizingSolver solver = new StaticDynamicUncertaintyNLHSolver();
+		AbstractStochasticLotSizingSolver solver = new StaticDynamicUncertaintyULHSolver();
 		
 		//Solve the problem with the solver
 		AbstractStochasticLotSizingSolution solution = solver.solve(problem);

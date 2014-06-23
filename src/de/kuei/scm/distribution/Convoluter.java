@@ -32,6 +32,10 @@ public class Convoluter {
 					Math.sqrt(Distribution1.getNumericalVariance()+Distribution2.getNumericalVariance())
 			);
 		}
+		//Folding two single point distributions
+		else if (Distribution1 instanceof RealSinglePointDistribution && Distribution2 instanceof RealSinglePointDistribution){
+			return new RealSinglePointDistribution(Distribution1.getNumericalMean()+Distribution2.getNumericalMean());
+		}
 		//if nothing applies throw exception
 		throw new ConvolutionNotDefinedException("Convoluting of types "+Distribution1.getClass().getName()+" and "+Distribution2.getClass().getName()+" not implemented, propably not effiently calculable");
 	}

@@ -21,6 +21,10 @@ public class NormalDistribution extends org.apache.commons.math3.distribution.No
 		super(mean, sd);
 	}
 	
+	public NormalDistribution(org.apache.commons.math3.distribution.NormalDistribution normalDistribution){
+		super(normalDistribution.getMean(), normalDistribution.getStandardDeviation());
+	}
+	
 	@Override
 	public RealDistribution negate() {
 		return new NormalDistribution(-this.getMean(), this.getStandardDeviation());

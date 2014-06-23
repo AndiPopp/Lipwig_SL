@@ -3,9 +3,7 @@
  */
 package de.kuei.scm.lotsizing.dynamic.stochastic.solution;
 
-import org.apache.commons.math3.RealFieldElement;
 import org.apache.commons.math3.analysis.UnivariateFunction;
-import org.apache.commons.math3.analysis.integration.SimpsonIntegrator;
 import org.apache.commons.math3.analysis.integration.UnivariateIntegrator;
 import org.apache.commons.math3.distribution.RealDistribution;
 
@@ -14,8 +12,11 @@ import de.kuei.scm.distribution.ConvolutionNotDefinedException;
 import de.kuei.scm.lotsizing.dynamic.stochastic.AbstractLotSizingPeriod;
 import de.kuei.scm.lotsizing.dynamic.stochastic.AbstractStochasticLotSizingProblem;
 import de.kuei.scm.lotsizing.dynamic.stochastic.solver.SolvingInitialisiationException;
+import de.kuei.scm.lotsizing.dynamic.stochastic.util.SimpleSimpsonIntegrator;
 
 /**
+ * This class simulates a solution with the restriction of non-negative lot sizes. It also 
+ * calculates the blind stock for a given solution.
  * @author Andi Popp
  *
  */
@@ -25,7 +26,7 @@ public class StaticDynamicUncertaintySimulator extends
 	/**
 	 * Amount of statistical mass that can be neglected for numerical calculations
 	 */
-	public double accuracy = 0.00000001;
+	public double accuracy = 0.0000000000000001;
 	
 	/* (non-Javadoc)
 	 * @see de.kuei.scm.lotsizing.dynamic.stochastic.solution.AbstractLotSizingSimulator#simulate(de.kuei.scm.lotsizing.dynamic.stochastic.AbstractStochasticLotSizingProblem, de.kuei.scm.lotsizing.dynamic.stochastic.solution.AbstractStochasticLotSizingSolution)
@@ -55,15 +56,12 @@ public class StaticDynamicUncertaintySimulator extends
 		return costs;
 	}
 
-	/**
-	 * Simulates the blocked overshoot costs
-	 * @param problem
-	 * @param solution
-	 * @return
-	 * @throws ConvolutionNotDefinedException if the demand cannot be convoluted by {@link Convoluter}
-	 * @throws SolvingInitialisiationException if problem and solution do not match
+	/*
+	 * (non-Javadoc)
+	 * @see de.kuei.scm.lotsizing.dynamic.stochastic.solution.BlindStockSimulator#simulateBlockedOvershoot(de.kuei.scm.lotsizing.dynamic.stochastic.AbstractStochasticLotSizingProblem, de.kuei.scm.lotsizing.dynamic.stochastic.solution.AbstractStochasticLotSizingSolution)
 	 */
-	public double simulateBlockedOvershootCosts(AbstractStochasticLotSizingProblem problem,
+	@Override
+	public double[] simulateBlockedOvershoot(AbstractStochasticLotSizingProblem problem,
 			AbstractStochasticLotSizingSolution solution)
 			throws ConvolutionNotDefinedException, SolvingInitialisiationException {
 		
@@ -71,36 +69,37 @@ public class StaticDynamicUncertaintySimulator extends
 		if (problem.getPeriods().length != solution.getAmountVariableValues().length)
 			throw new SolvingInitialisiationException("The length of the problem and the solution do not match in StaticDynamicUncertaintySimulator solve");
 		
-		double CurrentInventory = 0.0; //Starting inventory
-		double overshoot = 0.0;
-		double costs = 0.0;
+		
 		
 		AbstractLotSizingPeriod[] periods = problem.getPeriods();
 		boolean[] setupPattern = solution.getSetupPattern();
 		double[] orderUpToLevel = solution.getAmountVariableValues();
+		
+		double CurrentInventory = 0.0; //Starting inventory
+				double[] periodOvershoot = new double[periods.length];
 		
 		for (int i = 0; i < periods.length; i++){
 			if (setupPattern[i]){
-				if (CurrentInventory >= orderUpToLevel[i]) overshoot += CurrentInventory - orderUpToLevel[i];
+				if (CurrentInventory >= orderUpToLevel[i]) {
+					periodOvershoot[i] = CurrentInventory - orderUpToLevel[i];
+				}
+				
 				CurrentInventory = orderUpToLevel[i];
-				costs += periods[i].getInventoryHoldingCost()*overshoot;
+				
 			}
+			CurrentInventory -= periods[i].totalDemand().sample();
 			
-
 		}
 		
-		return costs;
+		return periodOvershoot;
 	}
 	
-	/**
-	 * Calculates the blocked overshoot costs
-	 * @param problem
-	 * @param solution
-	 * @return
-	 * @throws ConvolutionNotDefinedException if the demand cannot be convoluted by {@link Convoluter}
-	 * @throws SolvingInitialisiationException if problem and solution do not match
+	/*
+	 * (non-Javadoc)
+	 * @see de.kuei.scm.lotsizing.dynamic.stochastic.solution.BlindStockSimulator#calculateExpectedBlockedOvershoot(de.kuei.scm.lotsizing.dynamic.stochastic.AbstractStochasticLotSizingProblem, de.kuei.scm.lotsizing.dynamic.stochastic.solution.AbstractStochasticLotSizingSolution)
 	 */
-	public double calculateExpectedBlockedOvershootCosts(AbstractStochasticLotSizingProblem problem,
+	@Override
+	public double[] calculateExpectedBlockedOvershoot(AbstractStochasticLotSizingProblem problem,
 			AbstractStochasticLotSizingSolution solution)
 			throws ConvolutionNotDefinedException, SolvingInitialisiationException {
 		
@@ -108,13 +107,13 @@ public class StaticDynamicUncertaintySimulator extends
 		if (problem.getPeriods().length != solution.getAmountVariableValues().length)
 			throw new SolvingInitialisiationException("The length of the problem and the solution do not match in StaticDynamicUncertaintySimulator solve");
 		
-		double CurrentInventory = 0.0; //Starting inventory
-		double overshoot = 0.0;
-		double costs = 0.0;
+		
 		
 		AbstractLotSizingPeriod[] periods = problem.getPeriods();
 		boolean[] setupPattern = solution.getSetupPattern();
 		double[] orderUpToLevel = solution.getAmountVariableValues();
+		
+		double[] periodOvershoot = new double[periods.length];
 		
 		//No initial inventory so we skip the first period but have to start the demand with it
 		RealDistribution demand = periods[0].totalDemand();
@@ -134,20 +133,26 @@ public class StaticDynamicUncertaintySimulator extends
 					}
 				};
 				
-				UnivariateIntegrator integrator = new SimpsonIntegrator();
+//				UnivariateIntegrator integrator = new SimpsonIntegrator();
+				UnivariateIntegrator integrator = new SimpleSimpsonIntegrator();
 				
 				double min = demand.inverseCumulativeProbability(accuracy);
 				double max = orderUpToLevel[lastSetupPeriod]-orderUpToLevel[i];
-				overshoot += (integrator.integrate(1024, integrand, min, max)) ;
-				
+				periodOvershoot[i] = (integrator.integrate(4096, integrand, min, max));
+						
 				//restart convoluting the demand 
 				demand = periods[i].totalDemand();
+				lastSetupPeriod = i;
+				
 			}
 			else{
 				demand = Convoluter.convolute(demand, periods[i].totalDemand());
+				
 			}
-			costs += periods[i].getInventoryHoldingCost()*overshoot;
 		}
-		return costs;
+		return periodOvershoot;
 	}
+
+	
+
 }

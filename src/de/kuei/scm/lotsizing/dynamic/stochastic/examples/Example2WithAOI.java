@@ -6,15 +6,15 @@ import de.kuei.scm.distribution.ConvolutionNotDefinedException;
 import de.kuei.scm.lotsizing.dynamic.stochastic.NormalDistributedStochasticLotsizingProblem;
 import de.kuei.scm.lotsizing.dynamic.stochastic.solution.AbstractStochasticLotSizingSolution;
 import de.kuei.scm.lotsizing.dynamic.stochastic.solver.AbstractStochasticLotSizingSolver;
-import de.kuei.scm.lotsizing.dynamic.stochastic.solver.StaticDynamicUncertaintyNLHSolver;
-import de.kuei.scm.lotsizing.dynamic.stochastic.solver.StaticDynamicUncertaintyWithADINLHSolver;
+import de.kuei.scm.lotsizing.dynamic.stochastic.solver.StaticDynamicUncertaintyULHSolver;
+import de.kuei.scm.lotsizing.dynamic.stochastic.solver.StaticDynamicUncertaintyWithADIULHSolver;
 
 public class Example2WithAOI {
 
 	public static void main(String[] args) throws ConvolutionNotDefinedException {
 		NormalDistributedStochasticLotsizingProblem problem = new NormalDistributedStochasticLotsizingProblem(new File("examples/example_problem2.csv"));
 		
-		AbstractStochasticLotSizingSolver s = new StaticDynamicUncertaintyNLHSolver();
+		AbstractStochasticLotSizingSolver s = new StaticDynamicUncertaintyULHSolver();
 		AbstractStochasticLotSizingSolution solution = s.solve(problem);
 		solution.print();
 		System.out.println("Total Setup costs: "+solution.getTotalSetupCosts(problem));
@@ -22,7 +22,7 @@ public class Example2WithAOI {
 		
 		System.out.println();
 		
-		s = new StaticDynamicUncertaintyWithADINLHSolver();
+		s = new StaticDynamicUncertaintyWithADIULHSolver();
 		solution = s.solve(problem);
 		solution.print();
 		System.out.println("Total Setup costs: "+solution.getTotalSetupCosts(problem));

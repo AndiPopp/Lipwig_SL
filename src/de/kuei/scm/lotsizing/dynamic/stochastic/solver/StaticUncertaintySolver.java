@@ -7,6 +7,8 @@ import org.apache.commons.math3.distribution.RealDistribution;
 
 import de.kuei.scm.distribution.Convoluter;
 import de.kuei.scm.distribution.ConvolutionNotDefinedException;
+import de.kuei.scm.lotsizing.dynamic.stochastic.AbstractStochasticLotSizingProblem;
+import de.kuei.scm.lotsizing.dynamic.stochastic.solution.AbstractStochasticLotSizingSolution;
 import de.kuei.scm.lotsizing.dynamic.stochastic.solution.DPBackwardRecursionPeriod;
 import de.kuei.scm.lotsizing.dynamic.stochastic.solution.DPLotSizingDecision;
 import de.kuei.scm.lotsizing.dynamic.stochastic.util.StockFunction;
@@ -61,6 +63,16 @@ public class StaticUncertaintySolver extends AbstractStochasticLotSizingDPSolver
 	@Override
 	protected String getAmoutVariableName() {
 		return "Lot size";
+	}
+
+
+	@Override
+	public AbstractStochasticLotSizingSolution solve(
+			AbstractStochasticLotSizingProblem problem, boolean[] setupPattern)
+			throws SolvingInitialisiationException,
+			ConvolutionNotDefinedException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
