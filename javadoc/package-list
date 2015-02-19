@@ -1,2 +1,7 @@
 de.kuei.scm.distribution
 de.kuei.scm.lotsizing.dynamic.stochastic
+de.kuei.scm.lotsizing.dynamic.stochastic.examples
+de.kuei.scm.lotsizing.dynamic.stochastic.generators
+de.kuei.scm.lotsizing.dynamic.stochastic.solution
+de.kuei.scm.lotsizing.dynamic.stochastic.solver
+de.kuei.scm.lotsizing.dynamic.stochastic.util
